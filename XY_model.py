@@ -11,6 +11,8 @@ import math
 from scipy.optimize import curve_fit
 from numpy import pi
 from scipy.stats import gamma
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+
 
 
 ## applying Metropolis algorithm
@@ -130,16 +132,26 @@ class XYSystem():
 
     ## visulize a configurtion
     #  input：S/ spin configuration in list form
-    def show(self,colored=False):
+    def show(self, colored=False):
         config_matrix = self.list2matrix(self.spin_config)
         X, Y = np.meshgrid(np.arange(0,self.width ),np.arange(0, self.width))
         U = np.cos(config_matrix )
         V = np.sin(config_matrix )
         plt.figure(figsize=(4,4), dpi=100)
-        #plt.title('Arrows scale with plot width, not view')
         Q = plt.quiver(X, Y, U, V, units='width')
         qk = plt.quiverkey(Q, 0.1, 0.1, 1, r'$spin$', labelpos='E',
                     coordinates='figure')
         plt.title('T=%.2f'%self.temperature+', #spins='+str(self.width)+'x'+str(self.width))
         plt.axis('off')
+        plt.show()
+
+    def show_map(self):
+        fig = plt.figure(figsize=(20, 10))
+        ax0 = fig.add_subplot(1, 3, 1)
+        ax0.set_title("T = 0.1", fontsize=25)
+        im0 = ax0.imshow(self.list2matrix(self.spin_config))
+        divider0 = make_axes_locatable(ax0)
+        cax0 = divider0.append_axes("right", size="10%", pad=0.05)
+
+        fig.colorbar(im0, cax=cax0)
         plt.show()
