@@ -10,6 +10,8 @@ from matplotlib.legend_handler import HandlerLine2D
 import math
 from scipy.optimize import curve_fit
 from numpy import pi
+from scipy.stats import gamma
+
 
 ## applying Metropolis algorithm
 # input: T/temperature
@@ -24,7 +26,7 @@ class XYSystem():
         self.nbr = {i : ((i // L) * L + (i + 1) % L, (i + L) % N,
                     (i // L) * L + (i - 1) % L, (i - L) % N) \
                                             for i in list(range(N))}
-        self.spin_config = np.random.random(self.num_spins)*2*pi
+        self.spin_config = gamma.rvs(np.ones(width))
         self.temperature = temperature
         self.energy = np.sum(self.get_energy())/self.num_spins
         self.M = []
