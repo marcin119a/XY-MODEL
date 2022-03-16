@@ -148,7 +148,7 @@ class XYSystem():
     def show_map(self):
         fig = plt.figure(figsize=(20, 10))
         ax0 = fig.add_subplot(1, 3, 1)
-        ax0.set_title("T = 0.1", fontsize=25)
+        ax0.set_title('T=%.2f'%self.temperature+', fontsize=25)
         im0 = ax0.imshow(self.list2matrix(self.spin_config))
         divider0 = make_axes_locatable(ax0)
         cax0 = divider0.append_axes("right", size="10%", pad=0.05)
