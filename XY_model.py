@@ -28,7 +28,7 @@ class XYSystem():
         self.nbr = {i : ((i // L) * L + (i + 1) % L, (i + L) % N,
                     (i // L) * L + (i - 1) % L, (i - L) % N) \
                                             for i in list(range(N))}
-        self.spin_config = gamma.rvs(np.ones(width))
+        self.spin_config = gamma.rvs(np.ones(self.num_spins))
         self.temperature = temperature
         self.energy = np.sum(self.get_energy())/self.num_spins
         self.M = []
