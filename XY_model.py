@@ -45,7 +45,7 @@ class XYSystem():
         for idx in spin_idx:#one sweep in defined as N attempts of flip
             #k = np.random.randint(0, N - 1)#randomly choose a spin
             energy_i = -sum(np.cos(self.spin_config[idx]-self.spin_config[n]) for n in self.nbr[idx]) 
-            dtheta = np.random.uniform(0, self.spin_config.max())
+            dtheta = np.random.uniform(0, 1)
             spin_temp = self.spin_config[idx] + dtheta
             energy_f = -sum(np.cos(spin_temp-self.spin_config[n]) for n in self.nbr[idx]) 
             delta_E = energy_f - energy_i
