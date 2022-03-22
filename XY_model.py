@@ -12,7 +12,7 @@ from scipy.optimize import curve_fit
 from numpy import pi
 from scipy.stats import gamma
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-
+from scipy.stats import truncnorm
 
 
 ## applying Metropolis algorithm
@@ -45,7 +45,7 @@ class XYSystem():
         for idx in spin_idx:#one sweep in defined as N attempts of flip
             #k = np.random.randint(0, N - 1)#randomly choose a spin
             energy_i = -sum(np.cos(self.spin_config[idx]-self.spin_config[n]) for n in self.nbr[idx]) 
-            dtheta = np.random.uniform(0, 1)
+            dtheta =  truncnorm.pdf(self.spin_config[idx], 0, 1)
             spin_temp = self.spin_config[idx] + dtheta
             energy_f = -sum(np.cos(spin_temp-self.spin_config[n]) for n in self.nbr[idx]) 
             delta_E = energy_f - energy_i
@@ -148,10 +148,11 @@ class XYSystem():
     def show_map(self):
         fig = plt.figure(figsize=(20, 10))
         ax0 = fig.add_subplot(1, 3, 1)
-        ax0.set_title(f"{self.temperature}", fontsize=25)
+        ax0.set_title(f"T={self.temperature}", fontsize=25)
         im0 = ax0.imshow(self.list2matrix(self.spin_config))
         divider0 = make_axes_locatable(ax0)
         cax0 = divider0.append_axes("right", size="10%", pad=0.05)
 
         fig.colorbar(im0, cax=cax0)
-        plt.show()
+        import random
+        plt.savefig(f'{random.randint(1,100)}.png')

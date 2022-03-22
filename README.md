@@ -181,3 +181,7 @@ cool_dat=xy_system_2.annealing(T_init=2.5,T_final=0.1,nsteps = 10,show_equi=True
 
 ![png](./README/output_11_21.png)
 
+Install packages:
+```
+python -m pip install -U matplotlib
+```
