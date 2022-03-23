@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 from numpy import pi
-from scipy.stats import gamma
+from scipy.stats import gamma, uniform
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import random
 
@@ -12,6 +12,9 @@ import random
         S/spins configuration(in 1d list)
         H/ecternal field.default value=0
 """
+types = 8
+type_fixed = 0
+
 
 class XYSystem():
     def __init__(self, temperature = 3, width=10):
@@ -21,16 +24,15 @@ class XYSystem():
         self.nbr = {i : ((i // L) * L + (i + 1) % L, (i + L) % N,
                     (i // L) * L + (i - 1) % L, (i - L) % N) \
                                             for i in list(range(N))}
-        self.thetas = gamma.rvs(np.ones(self.num_spins))
-        self.bound = 30
-        self.spin_config = self.get_thetas(self.thetas)
+        self.thetas = gamma.rvs(np.ones((self.num_spins, 8)), loc=0, scale=3.0)
+        row_sums = self.thetas.sum(axis=1)
+        h = self.thetas / row_sums[:, np.newaxis]
+        h = h[:,0]
+        self.spin_config = self._transf(h, -pi, pi, 0, 1)
         self.temperature = temperature
-        self.energy = np.sum(self.get_energy())/self.num_spins
+        self.energy = np.sum(self.get_energy()) / self.num_spins
         self.M = []
         self.Cv = []
-
-    def _transf(self, t, c, d, a, b):
-        return c+ ((d-c)/(b-a)) * (t - a)
 
     def set_temperature(self, temperature):
         self.temperature = temperature
@@ -48,8 +50,6 @@ class XYSystem():
             delta_E = energy_f - energy_i
             if np.random.uniform(0.0, 1.0) < np.exp(-beta * delta_E):
                 self.spin_config[idx] += d_theta
-
-
 
     """ 
     calculate the energy of a given configuration  
@@ -95,14 +95,20 @@ class XYSystem():
         self.Cv=(energy2-energy**2)*beta**2
 
     """
-    Removing multiple angles 
+    Removing multiple angles for spins
     """
-    def get_thetas(self, thetas, degree=False):
-        x = np.cos(thetas)
+    def get_spins(self, degree=False):
+        x = np.cos(self.spin_config)
         y = np.sin(self.spin_config)
-        thetas = np.arctan2(y, x)
+        spins_norm = np.arctan2(y, x)
+        return spins_norm
 
-        return thetas
+    def _transf(self, t, c, d, a, b):
+        return c + ((d-c)/(b-a)) * (t - a)
+
+    def inv_hgs(self):
+        return self._transf(self.get_spins(), 0, 1, -pi, pi)
+
 
     """
     To see thermoquantities evolve as we cooling the systems down
@@ -147,7 +153,7 @@ class XYSystem():
     visulize a configurtion
     input：S/ spin configuration in list form
     """
-    def show(self, colored=False):
+    def show(self, colored=False, text = None):
         config_matrix = self.list2matrix(self.spin_config)
         x, y = np.meshgrid(np.arange(0,self.width ),np.arange(0, self.width))
         u = np.cos(config_matrix )
@@ -155,15 +161,16 @@ class XYSystem():
         plt.figure(figsize=(4,4), dpi=100)
         Q = plt.quiver(x, y, u, v, units='width')
         plt.quiverkey(Q, 0.1, 0.1, 1, r'$spin$', labelpos='E',  coordinates='figure')
-        plt.title('T=%.2f'%self.temperature+', #spins='+str(self.width)+'x'+str(self.width))
+        plt.title('T=%.2f'%self.temperature+', #spins='+str(self.width)+'x'+str(self.width) + f'{text}')
         plt.axis('off')
-        plt.show()
+        plt.savefig(f'{random.randint(1,100)}.png')
 
     def show_map(self):
         fig = plt.figure(figsize=(20, 10))
         ax0 = fig.add_subplot(1, 3, 1)
         ax0.set_title(f"T={self.temperature}", fontsize=25)
-        im0 = ax0.imshow(self.list2matrix(self.spin_config))
+        #im0 = ax0.imshow(self.list2matrix(self.inv_hgs()), vmin=-pi, vmax=pi)
+        im0 = ax0.imshow(self.list2matrix(self.inv_hgs()))
         divider0 = make_axes_locatable(ax0)
         cax0 = divider0.append_axes("right", size="10%", pad=0.05)
 
