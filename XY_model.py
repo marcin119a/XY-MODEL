@@ -23,7 +23,7 @@ class XYSystem():
                                             for i in list(range(N))}
         self.thetas = gamma.rvs(np.ones(self.num_spins))
         self.bound = 30
-        self.spin_config = self._transf(self.thetas, -pi, pi, 0, self.bound)
+        self.spin_config = self.get_thetas(self.thetas)
         self.temperature = temperature
         self.energy = np.sum(self.get_energy())/self.num_spins
         self.M = []
@@ -94,9 +94,11 @@ class XYSystem():
         energy2=np.average(np.power(dic_thermal_t['energy'][int(nstates/2):],2))
         self.Cv=(energy2-energy**2)*beta**2
 
-    def get_thetas(self, degree=False):
-        config_matrix = self.list2matrix(self.spin_config)
-        x = np.cos(self.spin_config)
+    """
+    Removing multiple angles 
+    """
+    def get_thetas(self, thetas, degree=False):
+        x = np.cos(thetas)
         y = np.sin(self.spin_config)
         thetas = np.arctan2(y, x)
 
