@@ -1,10 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from numpy import pi
-from scipy.stats import gamma, uniform
+from scipy.stats import gamma, uniform, truncexpon
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import random
-
+from truncgamma import tgamma
 """
  applying Metropolis algorithm
  input: T/temperature
@@ -19,13 +19,13 @@ class XYSystem():
     def __init__(self, temperature= 3, width=10):
         self.width = width
         self.num_spins = width**2
-        self.support_end = 10
+        self.support_end = 5
         L, N = self.width, self.num_spins
         self.nbr = {i: ((i // L) * L + (i + 1) % L, (i + L) % N,
                     (i // L) * L + (i - 1) % L, (i - L) % N) \
                                             for i in list(range(N))}
-        self.thetas = gamma.rvs(np.ones((self.num_spins, 8)), loc=9, scale=0.5)
-        self.spin_config = self._transf(self.thetas[:, 0], -pi, pi, 0, self.support_end)
+        self.thetas = truncexpon.rvs(b=self.support_end, size=self.num_spins)
+        self.spin_config = self._transf(self.thetas, -pi, pi, 0, self.support_end)
         self.temperature = temperature
         self.energy = np.sum(self.get_energy()) / self.num_spins
         self.M = []
