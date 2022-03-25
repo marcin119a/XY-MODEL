@@ -19,7 +19,7 @@ class XYSystem():
     def __init__(self, temperature= 3, width=10):
         self.width = width
         self.num_spins = width**2
-        self.support_end = 5
+        self.support_end = 10
         L, N = self.width, self.num_spins
         self.nbr = {i: ((i // L) * L + (i + 1) % L, (i + L) % N,
                     (i // L) * L + (i - 1) % L, (i - L) % N) \
