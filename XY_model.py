@@ -25,7 +25,7 @@ class XYSystem():
                     (i // L) * L + (i - 1) % L, (i - L) % N) \
                                             for i in list(range(N))}
         self.thetas = thetas
-        self.spin_config = self._transf(self.thetas, -pi, pi, 0, self.support_end)
+        self.spin_config = self._transf(self.thetas, -2*pi, 2*pi, 0, self.support_end)
         self.temperature = temperature
         self.energy = np.sum(self.get_energy()) / self.num_spins
         self.M = []
@@ -41,7 +41,7 @@ class XYSystem():
         for idx in spin_idx:#one sweep in defined as N attempts of flip
             #k = np.random.randint(0, N - 1)#randomly choose a spin
             energy_i = -sum(np.cos(self.spin_config[idx]-self.spin_config[n]) for n in self.nbr[idx])
-            d_theta = np.random.uniform(-pi, pi)
+            d_theta = np.random.uniform(-2*pi, 2*pi)
             spin_temp = self.spin_config[idx] + d_theta
             energy_f = -sum(np.cos(spin_temp-self.spin_config[n]) for n in self.nbr[idx]) 
             delta_E = energy_f - energy_i
@@ -109,7 +109,7 @@ class XYSystem():
         return c + ((d-c)/(b-a)) * (t - a)
 
     def _inv_tranf(self):
-        return self._transf(self.get_spins(), 0, self.support_end, -pi, pi)
+        return self._transf(self.get_spins(), 0, self.support_end, -2*pi, 2*pi)
 
 
     """
