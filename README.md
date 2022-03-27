@@ -14,11 +14,15 @@ from XY_model import XYSystem
 
 #### creating an object as a X-Y spin system with given width and temperature
 
-Use `XYSystem(temperature = , width = )` to creat a class object. Two variables can be assigned to initilize the system: the temperature and the width.
+Use `XYSystem(temperature = 0.5, thetas = thetas , width = )` to creat a class object. Two variables can be assigned to initilize the system: the temperature and the width.
 
 
 ```python
-xy_system_1 = XYSystem(temperature  = 0.5, width = 15)
+from scipy.stats import truncexpon
+support_limit = 10
+num_spots = 256
+thetas = truncexpon.rvs(b=support_limit, size=num_spots)
+xy_system_1 = XYSystem(temperature  = 0.5, thetas, support_limit)
 ```
 
 #### visulizingthe spin system

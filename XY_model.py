@@ -1,10 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from numpy import pi
-from scipy.stats import gamma, uniform, truncexpon
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import random
-from truncgamma import tgamma
+
 """
  applying Metropolis algorithm
  input: T/temperature
@@ -16,15 +15,16 @@ type_fixed = 0
 
 
 class XYSystem():
-    def __init__(self, temperature= 3, width=10):
-        self.width = width
-        self.num_spins = width**2
-        self.support_end = 5
+    def __init__(self, temperature, thetas, supp_end):
+        self.num_spins = thetas.shape[0]
+        print(self.num_spins )
+        self.width =  int(thetas.shape[0] ** (1/2))
+        self.support_end = supp_end
         L, N = self.width, self.num_spins
         self.nbr = {i: ((i // L) * L + (i + 1) % L, (i + L) % N,
                     (i // L) * L + (i - 1) % L, (i - L) % N) \
                                             for i in list(range(N))}
-        self.thetas = truncexpon.rvs(b=self.support_end, size=self.num_spins)
+        self.thetas = thetas
         self.spin_config = self._transf(self.thetas, -pi, pi, 0, self.support_end)
         self.temperature = temperature
         self.energy = np.sum(self.get_energy()) / self.num_spins
@@ -94,6 +94,8 @@ class XYSystem():
         energy2 = np.average(np.power(dic_thermal_t['energy'][int(nstates/2):],2))
         self.Cv = (energy2-energy**2)*beta**2
 
+        return self._inv_tranf()
+
     """
     Removing multiple angles for spins
     """
@@ -106,8 +108,8 @@ class XYSystem():
     def _transf(self, t, c, d, a, b):
         return c + ((d-c)/(b-a)) * (t - a)
 
-    def inv_hgs(self):
-        return self._transf(self.get_spins(), 0, 5, -pi, pi)
+    def _inv_tranf(self):
+        return self._transf(self.get_spins(), 0, self.support_end, -pi, pi)
 
 
     """
@@ -164,15 +166,15 @@ class XYSystem():
         plt.quiverkey(Q, 0.1, 0.1, 1, r'$spin$', labelpos='E',  coordinates='figure')
         plt.title('T=%.2f'%self.temperature+', #spins='+str(self.width)+'x'+str(self.width) + f'{text}')
         plt.axis('off')
-        plt.savefig(f'{random.randint(1,100)}.png')
+        #plt.savefig(f'{random.randint(1,100)}.png')
 
     def show_map(self, text=""):
         fig = plt.figure(figsize=(20, 10))
         ax0 = fig.add_subplot(1, 3, 1)
         ax0.set_title(f"T={self.temperature}, {text}", fontsize=25)
-        im0 = ax0.imshow(self.list2matrix(self.inv_hgs()),  vmin=0, vmax=self.support_end)
+        im0 = ax0.imshow(self.list2matrix(self._inv_tranf()),  vmin=0, vmax=self.support_end)
         divider0 = make_axes_locatable(ax0)
         cax0 = divider0.append_axes("right", size="10%", pad=0.05)
 
         fig.colorbar(im0, cax=cax0)
-        plt.savefig(f'{random.randint(1,100)}.png')
+        #plt.savefig(f'{random.randint(1,100)}.png')
