@@ -163,7 +163,7 @@ class XYSystem():
             u = np.cos(config_matrix)
             v = np.sin(config_matrix)
             plt.figure(figsize=(10, 10))
-            Q = plt.quiver(x, y, u, v, self.list2matrix(self._inv_tranf()[:, i]), cmap=cm.seismic, norm=norm)
+            Q = plt.quiver(x, y, u, v, self.list2matrix(self._inv_tranf()[:, i]))
             plt.quiverkey(Q, 0.1, 0.1, 1, r'$alpha$', labelpos='E',  coordinates='figure')
             plt.colorbar()
             plt.title(f'T={self.temperature}, #alphas={str(self.L)} {str(self.L)} {text}')
