@@ -23,7 +23,7 @@ class XYSystem():
                     (i // L) * L + (i - 1) % L, (i - L) % N) \
                                             for i in list(range(N))}
         self.thetas = thetas
-        self.alpha_config = self._transf(self.thetas, -pi, pi, 0, self.support_end)
+        self.alpha_config = self._transf(self.thetas, -2 * pi, 2 * pi, 0, self.support_end)
         self.temperature = temperature
         self.energy = np.sum(self.get_energy()) / self.N
         self.M = []
@@ -35,7 +35,7 @@ class XYSystem():
         alpha_idx = list(range(self.N))
         random.shuffle(alpha_idx)
         acceptance = np.random.uniform(size=(self.N, self.alpha_config.shape[1]), low=0.0, high=1.0)
-        prop = np.random.uniform(size=(self.N, self.alpha_config.shape[1]), low=- pi, high= pi)
+        prop = np.random.uniform(size=(self.N, self.alpha_config.shape[1]), low=- 2 * pi, high= 2 * pi)
         for idx in alpha_idx: # one sweep in defined as N attempts of flip for each types
             energy_i = -(np.cos(np.repeat(self.alpha_config[idx][np.newaxis, :], 4, axis=0) - self.alpha_config[self.nbr[idx], :])).sum(axis=0)
             spin_temp = self.alpha_config[idx] + prop[idx]
@@ -108,7 +108,7 @@ class XYSystem():
         return c + ((d-c)/(b-a)) * (t - a)
 
     def _inv_tranf(self):
-        return self._transf(self.get_alphas(), 0, self.support_end, -pi, pi)
+        return self._transf(self.get_alphas(), 0, self.support_end, -2 * pi, 2 * pi)
 
 
     """
@@ -175,7 +175,7 @@ class XYSystem():
             fig = plt.figure(figsize=(20, 10))
             ax0 = fig.add_subplot(1, 3, 1)
             ax0.set_title(f"T={self.temperature}, {text}", fontsize=25)
-            im0 = ax0.imshow(self.list2matrix(self._inv_tranf()[:, i]),  vmin=0, vmax=self.support_end)
+            im0 = ax0.imshow(self.list2matrix(self._inv_tranf()[:, i]),  vmin=0, vmax=self.support_end, cmap=cm.seismic)
             divider0 = make_axes_locatable(ax0)
             cax0 = divider0.append_axes("right", size="10%", pad=0.05)
 
