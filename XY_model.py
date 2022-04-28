@@ -78,7 +78,7 @@ class XYSystem():
                 print(f'energy={energy}')
                 self.show()
                 self.show_map(text='Start equilibrate')
-            if ((abs(energy-energy_temp) / abs(energy)<1e-4) & (k>500)) or k == max_n_sweeps-1:
+            if  k == max_n_sweeps-1:
                 print(f'\nequilibrium state is reached at T={self.temperature}')
                 print(f'#sweep={k}')
                 print(f'energy={energy}')
