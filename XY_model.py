@@ -95,12 +95,6 @@ class XYSystem():
         energy2 = np.average(np.power(dic_thermal_t['energy'][int(nstates/2):], 2))
         self.Cv = (energy2-energy**2)*beta**2
 
-        est = np.array(alphas).mean(axis=0)
-        self.alpha_config = est
-        if show:
-            self.show()
-            self.show_map(text='End equilibrate')
-
         return self._inv_tranf()
 
     """
