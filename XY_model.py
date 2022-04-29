@@ -69,16 +69,18 @@ class XYSystem():
         dic_thermal_t = {'energy': []}
         beta = 1.0/self.temperature
         energy_temp = 0
+        alphas = []
         for k in list(range(max_n_sweeps)):
             self.sweep()
             energy = np.sum(self.get_energy())/self.N/2
             dic_thermal_t['energy'] += [energy]
+            alphas.append(self.alpha_config)
             if show & (k%1e3 ==0):
-                print(f'sweeps={k+1}')
+                #print(f'sweeps={k+1}')
                 print(f'energy={energy}')
-                self.show()
-                self.show_map(text='Start equilibrate')
-            if  k == max_n_sweeps-1:
+                #self.show()
+                #self.show_map(text='Start equilibrate')
+            if ((abs(energy-energy_temp) / abs(energy)<1e-4) & (k>500)) or k == max_n_sweeps-1:
                 print(f'\nequilibrium state is reached at T={self.temperature}')
                 print(f'#sweep={k}')
                 print(f'energy={energy}')
@@ -92,6 +94,12 @@ class XYSystem():
         self.energy = energy
         energy2 = np.average(np.power(dic_thermal_t['energy'][int(nstates/2):], 2))
         self.Cv = (energy2-energy**2)*beta**2
+
+        est = np.array(alphas).mean(axis=0)
+        self.alpha_config = est
+        if show:
+            self.show()
+            self.show_map(text='End equilibrate')
 
         return self._inv_tranf()
 
