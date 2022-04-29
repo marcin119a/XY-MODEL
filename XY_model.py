@@ -76,10 +76,10 @@ class XYSystem():
             dic_thermal_t['energy'] += [energy]
             alphas.append(self.alpha_config)
             if show & (k%1e3 ==0):
-                #print(f'sweeps={k+1}')
+                print(f'sweeps={k+1}')
                 print(f'energy={energy}')
-                #self.show()
-                #self.show_map(text='Start equilibrate')
+                self.show()
+                self.show_map(text='Start equilibrate')
             if ((abs(energy-energy_temp) / abs(energy)<1e-4) & (k>500)) or k == max_n_sweeps-1:
                 print(f'\nequilibrium state is reached at T={self.temperature}')
                 print(f'#sweep={k}')
