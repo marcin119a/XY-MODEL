@@ -36,7 +36,7 @@ class XYSystem():
         alpha_idx = list(range(self.N))
         random.shuffle(alpha_idx)
         acceptance = np.random.uniform(size=(self.N, self.alpha_config.shape[1]), low=0.0, high=1.0)
-        prop = np.random.uniform(size=(self.N, self.alpha_config.shape[1]), low=- self.boundary., high = self.boundary)
+        prop = np.random.uniform(size=(self.N, self.alpha_config.shape[1]), low=- self.boundary, high = self.boundary)
         for idx in alpha_idx: # one sweep in defined as N attempts of flip for each types
             energy_i = -(np.cos(np.repeat(self.alpha_config[idx][np.newaxis, :], 4, axis=0) - self.alpha_config[self.nbr[idx], :])).sum(axis=0)
             spin_temp = self.alpha_config[idx] + prop[idx]
