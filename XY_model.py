@@ -14,7 +14,7 @@ import matplotlib
 
 
 class XYSystem():
-    def __init__(self, temperature, thetas, supp_end):
+    def __init__(self, temperature, thetas, supp_end, boundary):
         self.N = thetas.shape[0]
         self.L = int(thetas.shape[0] ** (1/2))
         self.support_end = supp_end
@@ -23,11 +23,12 @@ class XYSystem():
                     (i // L) * L + (i - 1) % L, (i - L) % N) \
                                             for i in list(range(N))}
         self.thetas = thetas
-        self.alpha_config = self._transf(self.thetas, -2 * pi, 2 * pi, 0, self.support_end)
+        self.alpha_config = self._transf(self.thetas, - pi, pi, 0, self.support_end)
         self.temperature = temperature
         self.energy = np.sum(self.get_energy()) / self.N
         self.M = []
         self.Cv = []
+        self.boundary = boundary
 
     
     def sweep(self):
@@ -35,7 +36,7 @@ class XYSystem():
         alpha_idx = list(range(self.N))
         random.shuffle(alpha_idx)
         acceptance = np.random.uniform(size=(self.N, self.alpha_config.shape[1]), low=0.0, high=1.0)
-        prop = np.random.uniform(size=(self.N, self.alpha_config.shape[1]), low=- 2 * pi, high= 2 * pi)
+        prop = np.random.uniform(size=(self.N, self.alpha_config.shape[1]), low=- self.boundary., high = self.boundary)
         for idx in alpha_idx: # one sweep in defined as N attempts of flip for each types
             energy_i = -(np.cos(np.repeat(self.alpha_config[idx][np.newaxis, :], 4, axis=0) - self.alpha_config[self.nbr[idx], :])).sum(axis=0)
             spin_temp = self.alpha_config[idx] + prop[idx]
@@ -98,7 +99,7 @@ class XYSystem():
         return self._inv_tranf()
 
     """
-        Removing multiple alphas over (-2pi, 2pi)
+        Removing multiple alphas over (-pi, pi)
     """
     def get_alphas(self, degree=False):
         x = np.cos(self.alpha_config)
@@ -110,7 +111,7 @@ class XYSystem():
         return c + ((d-c)/(b-a)) * (t - a)
 
     def _inv_tranf(self):
-        return self._transf(self.get_alphas(), 0, self.support_end, -2 * pi, 2 * pi)
+        return self._transf(self.get_alphas(), 0, self.support_end, -pi, pi)
 
 
     """
