@@ -160,14 +160,13 @@ class XYSystem():
     """
     def show(self, text = None):
         for i in range(self.alpha_config.shape[1]):
-            norm = matplotlib.colors.Normalize(vmin=0, vmax=self.support_end, clip=False)
             config_matrix = self.list2matrix(self.alpha_config[:, i])
             x, y = np.meshgrid(np.arange(0, self.L), np.arange(0, self.L))
             u = np.cos(config_matrix)
             v = np.sin(config_matrix)
             plt.figure(figsize=(10, 10))
             Q = plt.quiver(x, y, u, v, self.list2matrix(self._inv_tranf()[:, i]))
-            plt.quiverkey(Q, 0.1, 0.1, 1, r'$alpha$', labelpos='E',  coordinates='figure')
+            #plt.quiverkey(Q, 0.1, 0.1, 1, r'$alpha$', labelpos='E',  coordinates='figure')
             plt.colorbar()
             plt.title(f'T={self.temperature}, #alphas={str(self.L)} {str(self.L)} {text}')
             plt.axis('off')
