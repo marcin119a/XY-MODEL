@@ -38,7 +38,6 @@ class IsingSystem():
 
             energy_f = (np.repeat(prop[idx][np.newaxis, :], 4, axis=0) * self.spin_config[self.nbr[idx], :]).sum(axis=0)
             delta_e = energy_f - energy_i
-
             dec = acceptance[idx] < np.exp(-beta * delta_e)
 
             self.spin_config[idx, dec] = prop[idx, dec]
