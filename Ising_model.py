@@ -13,7 +13,7 @@ import matplotlib
 
 
 class IsingSystem():
-    def __init__(self, temperature, spin_config):
+    def __init__(self, beta, spin_config):
         self.N = spin_config.shape[0]
         self.L = int(spin_config.shape[0] ** (1 / 2))
         L, N = self.L, self.N
@@ -21,12 +21,11 @@ class IsingSystem():
                         (i // L) * L + (i - 1) % L, (i - L) % N) \
                     for i in list(range(N))}
         self.spin_config = spin_config
-        self.temperature = temperature
+        self.beta = beta
         self.energy = np.sum(self.get_energy()) / self.N
         self.M = []
 
     def sweep(self):
-        beta = 1.0 / self.temperature
         spins_idx = list(range(self.N))
         random.shuffle(spins_idx)
         acceptance = np.random.uniform(size=(self.N, self.spin_config.shape[1]), low=0.0, high=1.0)
@@ -38,7 +37,7 @@ class IsingSystem():
 
             energy_f = (np.repeat(prop[idx][np.newaxis, :], 4, axis=0) * self.spin_config[self.nbr[idx], :]).sum(axis=0)
             delta_e = energy_f - energy_i
-            dec = acceptance[idx] < np.exp(-beta * delta_e)
+            dec = acceptance[idx] < np.exp(-self.beta * delta_e)
 
             self.spin_config[idx, dec] = prop[idx, dec]
 
@@ -62,10 +61,8 @@ class IsingSystem():
     """
 
     def equilibrate(self, max_n_sweeps=int(1e3), temperature=None, show=False):
-        if temperature is not None:
-            self.temperature = temperature
+
         dic_thermal_t = {'energy': []}
-        beta = 1.0 / self.temperature
         energy_temp = 0
         for k in list(range(max_n_sweeps)):
             self.sweep()
@@ -76,7 +73,7 @@ class IsingSystem():
                 print(f'energy={energy}')
                 self.show_map(text='Start equilibrate')
             if ((abs(energy - energy_temp) / abs(energy) < 1e-4) & (k > 500)) or k == max_n_sweeps - 1:
-                print(f'\nequilibrium state is reached at T={self.temperature}')
+                print(f'\nequilibrium state is reached at Beta={self.beta}')
                 print(f'#sweep={k}')
                 print(f'energy={energy}')
                 if show:
@@ -87,7 +84,7 @@ class IsingSystem():
         energy = np.average(dic_thermal_t['energy'][int(nstates / 2):])
         self.energy = energy
         energy2 = np.average(np.power(dic_thermal_t['energy'][int(nstates / 2):], 2))
-        self.Cv = (energy2 - energy ** 2) * beta ** 2
+        self.Cv = (energy2 - energy ** 2) * self.beta ** 2
 
 
     """
@@ -141,7 +138,7 @@ class IsingSystem():
         for i in range(self.spin_config.shape[1]):
             fig = plt.figure(figsize=(20, 10))
             ax0 = fig.add_subplot(1, 3, 1)
-            ax0.set_title(f"T={self.temperature}, {text}", fontsize=25)
+            ax0.set_title(f"beta={self.beta}, {text}", fontsize=25)
             im0 = ax0.imshow(self.list2matrix(self.spin_config[:, i]), cmap=cm.seismic)
             divider0 = make_axes_locatable(ax0)
             cax0 = divider0.append_axes("right", size="10%", pad=0.05)
