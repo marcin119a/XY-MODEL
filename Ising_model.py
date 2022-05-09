@@ -61,7 +61,7 @@ class IsingSystem():
         Let the system evolve to equilibrium state
     """
 
-    def equilibrate(self, max_n_sweeps=int(1e3), temperature=None, show=False):
+    def equilibrate(self, max_n_sweeps=int(1e4), temperature=None, show=False):
         if temperature is not None:
             self.temperature = temperature
         dic_thermal_t = {'energy': []}
@@ -75,7 +75,7 @@ class IsingSystem():
                 print(f'sweeps={k + 1}')
                 print(f'energy={energy}')
                 self.show_map(text='Start equilibrate')
-            if ((abs(energy - energy_temp) / abs(energy) < 1e-4) & (k > 500)) or k == max_n_sweeps - 1:
+            if  k == max_n_sweeps - 1:
                 print(f'\nequilibrium state is reached at T={self.temperature}')
                 print(f'#sweep={k}')
                 print(f'energy={energy}')
